@@ -14,7 +14,7 @@ var term = {
 };
 
 // restore the Array::find overwriten by dynarch from Ymacs - make it double purpose
-Array.prototype.find = function(value) {
+Array.prototype.find = function (value) {
     if (typeof value === 'function') {
         // original
         let i = 0;
@@ -25,28 +25,60 @@ Array.prototype.find = function(value) {
         }
     } else {
         var t = value;
-        for(var e=this.length;--e>=0;)if(this[e]===t)return e;return-1;
+        for (var e = this.length; --e >= 0;) if (this[e] === t) return e;
+        return -1;
     }
 };
 term.banner = [
-    '  ____ ___ _____ ',
-    ' / ___|_ _|_   _| __      __   _      _____              _           _',
-    '| |  _ | |  | |   \\ \\    / /__| |__  |_   _|__ _ _ _ __ (_)_ _  __ _| |',
-    '| |_| || |  | |    \\ \\/\\/ / -_) \'_ \\   | |/ -_) \'_| \'  \\| | \' \\/ _` | |',
-    ' \\____|___| |_|     \\_/\\_/\\___|_.__/   |_|\\___|_| |_|_|_|_|_||_\\__,_|_|'
+    // '##############################################################',
+    // '#  ╔═╗╔═╗╔═╗╦   ┌─┐┬ ┬┌┐        ┬ ┬┌─┐┌┐   ╔═╗┬ ┬┌─┐┬  ┬     #',
+    // '#  ╚═╗║ ╦║ ║║   ├─┘│ │├┴┐  ───  │││├┤ ├┴┐  ╚═╗├─┤├┤ │  │     #',
+    // '#  ╚═╝╚═╝╚═╝╩═╝o┴  └─┘└─┘       └┴┘└─┘└─┘  ╚═╝┴ ┴└─┘┴─┘┴─┘   #',
+'=========================================================================================',
+'=======      ====      =====    ====  ============       ===  ====  ==      =============',
+'======  ====  ==   ==   ===  ==  ===  ============  ====  ==  ====  ==  ===  ============',
+'======  ====  ==  ====  ==  ====  ==  ============  ====  ==  ====  ==  ====  ===========',
+'=======  =======  ========  ====  ==  ============  ====  ==  ====  ==  ===  ============',
+'=========  =====  ========  ====  ==  ============       ===  ====  ==      =============',
+'===========  ===  ===   ==  ====  ==  ============  ========  ====  ==  ===  ============',
+'======  ====  ==  ====  ==  ====  ==  ============  ========  ====  ==  ====  ===========',
+'======  ====  ==   ==   ===  ==  ===  ========  ==  ========   ==   ==  ===  ============',
+'=======      ====      =====    ====        ==  ==  =========      ===      =============',
+'=========================================================================================',
+'=========================================================================================',
+'=======  ==  ===  ==========  =  ========================  ===================  =========',
+'=======  ==  ===  =========  ==  =======================  ====================  =========',
+'======        ==  ========  ===  ======================  =====================  =========',
+'=======  ==  ===  =======  ====  =====  ==  = ========  ====  =   =  ===   ===  =========',
+'=======  ==  ===  ======  =====    =======     ======  =====  =   =  ==  =  ==    =======',
+'======        ==  =====  ======  =  ==  ==  =  =====  =======   =   ====  ====  =  ======',
+'=======  ==  =========  =======  =  ==  ==  =  ====  ========   =   =====  ===  =  ======',
+'=======  ==  ===  ===  ========  =  ==  ==  =  ===  ========== === ====  =  ==  =  ======',
+'================  ==  =========    ===  ==  =  ==  =========== === =====   ===  =  ======',
+'=========================================================================================',
+    `#------------------------------------------------------------#`,
+    `# #!/bin/wsh                                                 #`,
+    `# load browser-fs                                            #`,
+    `# load isomorphic-git                                        #`,
+    `# load nano                                                  #`,
+    `# deploy endpoint                                            #`,
+    `#                                                            #`,
+    `##############################################################`,
 ];
+
 function greetings() {
     var title;
     if (this.cols() > term.banner[1].length) {
         title = term.banner.join('\n');
     } else {
-        title = 'GIT Web Terminal';
+        title = '#!SGOL.pub/wsh';
     }
     return title + '\n\n' + 'use [[;#fff;]help] to see the available commands' +
-           ' or [[;#fff;]credits] to list the projects used\n';
+        ' or [[;#fff;]credits] to list the projects used\n';
 }
+
 function BrowserFSConfigure() {
-    return new Promise(function(resolve, reject) {
+    return new Promise(function (resolve, reject) {
         BrowserFS.configure({
             fs: 'IndexedDB',
             options: {}
@@ -54,7 +86,7 @@ function BrowserFSConfigure() {
             if (err) {
                 var term = $.terminal.active();
                 if (!term) {
-                    term = $('.term').terminal(function(command, term) {
+                    term = $('.term').terminal(function (command, term) {
                         term.error('BrowserFS was not initialized');
                     }, {greetings: false, name: 'git'}).echo(greetings);
                 }
@@ -68,6 +100,7 @@ function BrowserFSConfigure() {
 }
 
 BrowserFSConfigure().then(() => {
+    console.log("Browser fs loaded")
     var name = 'git'; // terminal name for history
     window.fs = BrowserFS.BFSRequire('fs');
     window.path = BrowserFS.BFSRequire('path');
@@ -78,10 +111,10 @@ BrowserFSConfigure().then(() => {
     }
     var scope = location.pathname.replace(/\/[^\/]+$/, '/');
 
-    $.fn.confirm = async function(message) {
+    $.fn.confirm = async function (message) {
         var term = $(this).terminal();
-        const response = await new Promise(function(resolve) {
-            term.push(function(command) {
+        const response = await new Promise(function (resolve) {
+            term.push(function (command) {
                 if (command.match(/Y(es)?/i)) {
                     resolve(true);
                 } else if (command.match(/N(o)?/i)) {
@@ -99,28 +132,35 @@ BrowserFSConfigure().then(() => {
         // service worker.
         if (!scope.match(/__browserfs__/)) {
             navigator.serviceWorker.register('sw.js', {scope})
-                     .then(function(reg) {
-                         reg.addEventListener('updatefound', function() {
-                             var installingWorker = reg.installing;
-                             console.log('A new service worker is being installed:',
-                                         installingWorker);
-                         });
-                         // registration worked
-                         console.log('Registration succeeded. Scope is ' + reg.scope);
-                     }).catch(function(error) {
-                         // registration failed
-                             console.log('Registration failed with ' + error);
-                     });
+                .then(function (reg) {
+                    reg.addEventListener('updatefound', function () {
+                        var installingWorker = reg.installing;
+                        console.log('A new service worker is being installed:',
+                            installingWorker);
+                    });
+                    // registration worked
+                    console.log('Registration succeeded. Scope is ' + reg.scope);
+                }).catch(function (error) {
+                // registration failed
+                console.log('Registration failed with ' + error);
+            });
         }
     }
     var git_wrapper = term.git = {};
     if (typeof Worker !== 'undefined') {
         var worker = new Worker(scope + 'js/git-worker.js');
         let count = 0;
-        worker.addEventListener("message", function handler({ data }) {
+        worker.addEventListener("message", function handler({data}) {
             function response(id, method, result) {
-                worker.postMessage({ type: "RPC", method, object: data.object, id, result});
+                worker.postMessage({
+                    type: "RPC",
+                    method,
+                    object: data.object,
+                    id,
+                    result
+                });
             }
+
             if (data.type === 'RPC') {
                 var object;
                 if (data.object === 'terminal') {
@@ -133,7 +173,7 @@ BrowserFSConfigure().then(() => {
                         var result = object[data.method].apply(object, data.args || []);
                         if (result !== object) {
                             if (result && typeof result.then === 'function') {
-                                result.then(function(result) {
+                                result.then(function (result) {
                                     response(data.id, data.method, result);
                                 });
                             } else {
@@ -146,11 +186,11 @@ BrowserFSConfigure().then(() => {
                 }
             }
         });
-        Object.getOwnPropertyNames(git).forEach(function(name) {
+        Object.getOwnPropertyNames(git).forEach(function (name) {
             var emitter_handler = null;
             if (typeof git[name] === 'function') {
-                git_wrapper[name] = function({emitter, fs, ...args}) {
-                    return new Promise(function(resolve, reject) {
+                git_wrapper[name] = function ({emitter, fs, ...args}) {
+                    return new Promise(function (resolve, reject) {
                         var id = `rpc${++count}`;
                         if (emitter instanceof EventEmitter) {
                             emitter_handler = function handler({data}) {
@@ -161,7 +201,7 @@ BrowserFSConfigure().then(() => {
                             args.emitter = true;
                             worker.addEventListener("message", emitter_handler);
                         }
-                        worker.addEventListener("message", function handler({ data }) {
+                        worker.addEventListener("message", function handler({data}) {
                             if (data.type === 'RPC' && id === data.id) {
                                 if (emitter_handler) {
                                     worker.removeEventListener("message", emitter_handler);
@@ -178,13 +218,13 @@ BrowserFSConfigure().then(() => {
                                 worker.removeEventListener("message", handler);
                             }
                         });
-                        worker.postMessage({ type: "RPC", method: name, id, params: args});
+                        worker.postMessage({type: "RPC", method: name, id, params: args});
                     });
                 };
             }
         });
     } else {
-        Object.getOwnPropertyNames(git).forEach(function(name) {
+        Object.getOwnPropertyNames(git).forEach(function (name) {
             git_wrapper[name] = git[name].bind(git);
         });
     }
@@ -204,16 +244,17 @@ BrowserFSConfigure().then(() => {
     function resolve(p) {
         return path.resolve(p[0] == '/' ? p : path.join(cwd, p));
     }
+
     // -----------------------------------------------------------------------------------------------------
     function color(name, string) {
         var colors = {
-            blue:   '#55f',
-            green:  '#4d4',
-            grey:   '#999',
-            red:    '#A00',
+            blue: '#55f',
+            green: '#4d4',
+            grey: '#999',
+            red: '#A00',
             yellow: '#FF5',
             violet: '#a320ce',
-            white:  '#fff',
+            white: '#fff',
             'persian-green': '#0aa'
         };
         if (colors[name]) {
@@ -222,6 +263,7 @@ BrowserFSConfigure().then(() => {
             return string;
         }
     }
+
     // -----------------------------------------------------------------------------------------------------
     function messageEmitter() {
         var emitter = new EventEmitter();
@@ -242,6 +284,7 @@ BrowserFSConfigure().then(() => {
         });
         return emitter;
     }
+
     // -----------------------------------------------------------------------------------------------------
     function list(path) {
         term.pause();
@@ -256,8 +299,8 @@ BrowserFSConfigure().then(() => {
             path = path.slice(1);
         }
         var parts = string === '/'
-        ? string.split('/')
-        : string.replace(/\/?[^\/]*$/, '').split('/');
+            ? string.split('/')
+            : string.replace(/\/?[^\/]*$/, '').split('/');
         if (parts[0] === '') {
             parts = parts.slice(1);
         }
@@ -271,11 +314,12 @@ BrowserFSConfigure().then(() => {
             return parts;
         }
     }
+
     // -----------------------------------------------------------------------------------------------------
     function read(cmd, cb, raw) {
         var filename = typeof cmd === 'string' ? cmd : cmd.args.length == 1 ? cwd + '/' + cmd.args[0] : null;
         if (filename) {
-            fs.readFile(filename, function(err, data) {
+            fs.readFile(filename, function (err, data) {
                 if (err) {
                     term.error(err.message);
                 } else {
@@ -292,6 +336,7 @@ BrowserFSConfigure().then(() => {
             });
         }
     }
+
     // -----------------------------------------------------------------------------------------------------
     function split_args(args) {
         return {
@@ -299,6 +344,7 @@ BrowserFSConfigure().then(() => {
             args: args.filter(arg => !arg.match(/^-/))
         };
     }
+
     // -----------------------------------------------------------------------------------------------------
     function processGitFiles(files) {
         return gitroot(cwd).then((dir) => {
@@ -309,6 +355,7 @@ BrowserFSConfigure().then(() => {
             };
         });
     }
+
     // -----------------------------------------------------------------------------------------------------
     function getOption(option, args) {
         option = args.reduce((acc, arg) => {
@@ -323,14 +370,19 @@ BrowserFSConfigure().then(() => {
         }, false);
         return option === true ? false : option;
     }
+
     // -----------------------------------------------------------------------------------------------------
     function getAllStats({cwd, branch}) {
         function notGitDir(name) {
             return !name.match(/^\.git\/?/);
         }
+
         return gitroot(cwd).then((dir) => {
             var all = listAllFiles({dir, pattern: /^(?!.git\/)[^\/]+\//});
-            return Promise.all([listBranchFiles({dir, branch}), all]).then(([tracked, files]) => {
+            return Promise.all([listBranchFiles({
+                dir,
+                branch
+            }), all]).then(([tracked, files]) => {
                 var re = new RegExp('^' + dir);
                 return Promise.all(union(tracked, files).map(filepath => {
                     return git.status({dir, filepath}).then(status => {
@@ -340,6 +392,7 @@ BrowserFSConfigure().then(() => {
             });
         });
     }
+
     // -----------------------------------------------------------------------------------------------------
     function gitAddAll({dir, branch, all}) {
         return getAllStats({cwd: dir, branch}).then((files) => {
@@ -349,12 +402,16 @@ BrowserFSConfigure().then(() => {
             }
             return files.filter(([_, status]) => !skip_status.includes(status));
         }).then((files) => {
-            return Promise.all(files.map(([filepath, status]) => git.add({dir, filepath})));
+            return Promise.all(files.map(([filepath, status]) => git.add({
+                dir,
+                filepath
+            })));
         });
     }
+
     const error = (e) => term.error(e.message || e).resume();
     term.commands = {
-        mkdir: function(cmd) {
+        mkdir: function (cmd) {
             if (cmd.args.length > 0) {
                 var options = [];
                 var args = [];
@@ -375,7 +432,7 @@ BrowserFSConfigure().then(() => {
                 }
             }
         },
-        cd: function(cmd) {
+        cd: function (cmd) {
             if (cmd.args.length === 1) {
                 var dirname = path.resolve(cwd + '/' + cmd.args[0]);
                 term.pause();
@@ -394,14 +451,15 @@ BrowserFSConfigure().then(() => {
                 });
             }
         },
-        emacs: function(cmd) {
+        emacs: function (cmd) {
             term.resume();
             var fname = cmd.args[0];
             if (typeof fname !== 'string') {
                 fname = String(fname);
             }
+
             function init() {
-                setTimeout(function() {
+                setTimeout(function () {
                     term.focus(false);
                     $('.Ymacs, .DlLayout').show();
                     ymacs.focus();
@@ -409,6 +467,7 @@ BrowserFSConfigure().then(() => {
                     ymacs.callHooks('onResize');
                 }, 0);
             }
+
             if (fname) {
                 var path;
                 if (fname.match(/^\//)) {
@@ -422,7 +481,7 @@ BrowserFSConfigure().then(() => {
                 init();
             }
         },
-        vi: function(cmd) {
+        vi: function (cmd) {
             var textarea = $('.vi');
             var editor;
             var fname = cmd.args[0];
@@ -437,15 +496,16 @@ BrowserFSConfigure().then(() => {
                 } else {
                     path = (cwd === '/' ? '' : cwd) + '/' + fname;
                 }
+
                 function open(file) {
                     textarea.val(file);
                     editor = window.editor = vi(textarea[0], {
                         color: '#ccc',
                         backgroundColor: '#000',
-                        onSave: function() {
+                        onSave: function () {
                             // we need to replace < and & because jsvi is converting them to entities
                             var file = textarea.val().replace(/&amp;/g, '&').replace(/&lt;/g, '<');
-                            fs.writeFile(path, file, function(err, wr) {
+                            fs.writeFile(path, file, function (err, wr) {
                                 if (err) {
                                     term.error(err.message);
                                 }
@@ -454,6 +514,7 @@ BrowserFSConfigure().then(() => {
                         onExit: term.focus
                     });
                 }
+
                 fs.stat(path, (err, stat) => {
                     if (stat && stat.isFile()) {
                         read(cmd, open, true);
@@ -472,14 +533,15 @@ BrowserFSConfigure().then(() => {
                 });
             }
         },
-        cat: function(cmd) {
+        cat: function (cmd) {
             read(cmd, term.echo);
         },
-        less: function(cmd) {
+        less: function (cmd) {
             read(cmd, term.less.bind(term));
         },
-        ls: function(cmd) {
+        ls: function (cmd) {
             var {options, args} = split_args(cmd.args);
+
             function filter(list) {
                 if (options.match(/a/)) {
                     return list;
@@ -489,6 +551,7 @@ BrowserFSConfigure().then(() => {
                     return list.filter(name => !name.match(/^\./));
                 }
             }
+
             list(cwd + '/' + (args[0] || '')).then((content) => {
                 var dirs = filter(['.', '..'].concat(content.dirs)).map((dir) => color('blue', dir));
                 var result = dirs.concat(filter(content.files));
@@ -497,8 +560,8 @@ BrowserFSConfigure().then(() => {
                 }
             });
         },
-        clean: function() {
-            term.push(function(yesno) {
+        clean: function () {
+            term.push(function (yesno) {
                 if (yesno.match(/^y(es)?$/i)) {
                     fs.getRootFS().empty();
                 }
@@ -509,7 +572,7 @@ BrowserFSConfigure().then(() => {
                 prompt: 'are you sure you want clean File System [Y/N]? '
             });
         },
-        rm: function(cmd) {
+        rm: function (cmd) {
             var {options, args} = split_args(cmd.args);
 
             var len = args.length;
@@ -537,29 +600,29 @@ BrowserFSConfigure().then(() => {
                             if (!--len) {
                                 term.resume();
                             }
-                        } catch(e) {
+                        } catch (e) {
                             error(e);
                         }
                     }
                 });
             });
         },
-        zip: function(cmd) {
+        zip: function (cmd) {
             term.pause();
             if (cmd.args.length === 2) {
                 makeZip.apply(null, cmd.args.map(resolve)).then(() => {
                     term.echo(`click to download [[!;;;;__browserfs__/${cmd.args[1]}]${cmd.args[1]}]`).resume();
                 }).catch(error);
             } else {
-               term.echo('compress directory\nzip <DIRECTORY> <ZIP FILENAME>');
+                term.echo('compress directory\nzip <DIRECTORY> <ZIP FILENAME>');
             }
         },
-        view: function(cmd) {
+        view: function (cmd) {
             if (cmd.args.length === 1) {
                 view(cmd.args[0]);
             }
         },
-        record: function(cmd) {
+        record: function (cmd) {
             if (cmd.args[0] == 'start') {
                 term.history_state(true);
             } else if (cmd.args[0] == 'stop') {
@@ -569,7 +632,7 @@ BrowserFSConfigure().then(() => {
             }
         },
         git: {
-            reset: async function(cmd) {
+            reset: async function (cmd) {
                 cmd.args.shift();
                 term.pause();
                 const hard = cmd.args.includes('--hard');
@@ -584,30 +647,30 @@ BrowserFSConfigure().then(() => {
                         term.echo(`HEAD is now at ${commit.oid.substring(0, 7)} ${commit.message.trim()}`);
                     } else {
                         const matrix = await git.statusMatrix({fs, dir});
-                        const files = matrix.filter(file => [0,3].includes(file[3]));
+                        const files = matrix.filter(file => [0, 3].includes(file[3]));
                         files.forEach(([filepath]) => {
                             git.resetIndex({fs, dir: '/gaiman', filepath});
                         });
                     }
-                } catch(e) {
-                    term.exception(e);
-                } finally {
-                    term.resume();
-                }
-            },
-            branch: function(cmd) {
-                term.echo('to be implemented');
-            },
-            test: async function(cmd) {
-                try {
-                    
                 } catch (e) {
                     term.exception(e);
                 } finally {
                     term.resume();
                 }
             },
-            pull: async function(cmd) {
+            branch: function (cmd) {
+                term.echo('to be implemented');
+            },
+            test: async function (cmd) {
+                try {
+
+                } catch (e) {
+                    term.exception(e);
+                } finally {
+                    term.resume();
+                }
+            },
+            pull: async function (cmd) {
                 try {
                     term.pause();
                     var dir = await gitroot(cwd);
@@ -658,7 +721,11 @@ BrowserFSConfigure().then(() => {
                             branch
                         ].join(''));
                         output.push('Fast-froward');
-                        const diffs = await gitCommitDiff({dir, oldSha: HEAD_before, newSha: HEAD_after});
+                        const diffs = await gitCommitDiff({
+                            dir,
+                            oldSha: HEAD_before,
+                            newSha: HEAD_after
+                        });
                         output.push(diffStat(Object.values(diffs).map(val => val.diff)));
                         term.echo(output.join('\n'));
                     }
@@ -681,7 +748,7 @@ BrowserFSConfigure().then(() => {
                  *  1 file changed, 1 insertion(+)
                  */
             },
-            fetch: async function(cmd) {
+            fetch: async function (cmd) {
                 cmd.args.shift();
                 try {
                     if (cmd.args.length) {
@@ -694,13 +761,13 @@ BrowserFSConfigure().then(() => {
                             emitter
                         });
                     }
-                } catch(e) {
+                } catch (e) {
                     term.error(e.message || e);
                 } finally {
                     term.resume();
                 }
             },
-            checkout: async function(cmd) {
+            checkout: async function (cmd) {
                 cmd.args.shift();
                 try {
                     if (cmd.args.length) {
@@ -738,7 +805,7 @@ BrowserFSConfigure().then(() => {
                  *   (use "git push" to publish your local commits)
                  */
             },
-            push: async function(cmd) {
+            push: async function (cmd) {
                 if (true || credentials.username && credentials.password) {
                     term.pause();
                     var emitter = messageEmitter();
@@ -748,7 +815,10 @@ BrowserFSConfigure().then(() => {
                         var branches = await git.listBranches({dir, remote: 'origin'});
                         var output = [`To ${url}`];
                         if (branches.includes(branch)) {
-                            var ref = await git.resolveRef({dir, ref: `refs/remotes/origin/${branch}`});
+                            var ref = await git.resolveRef({
+                                dir,
+                                ref: `refs/remotes/origin/${branch}`
+                            });
                             var HEAD = await git.resolveRef({dir, ref: 'HEAD'});
                             output.push(`   ${ref.substring(0, 7)}..${HEAD.substring(0, 7)} ${branch} -> ${branch}`);
                         } else {
@@ -763,7 +833,7 @@ BrowserFSConfigure().then(() => {
                                 //authPassword: credentials.password,
                                 emitter
                             });
-                        } catch(e) {
+                        } catch (e) {
                             console.log(e);
                         }
                         term.echo(output.join('\n'));
@@ -776,7 +846,7 @@ BrowserFSConfigure().then(() => {
                     term.error('You need to call `git login` to set username and password before push');
                 }
             },
-            commit: async function(cmd) {
+            commit: async function (cmd) {
                 cmd.args.shift();
                 term.pause();
                 try {
@@ -790,17 +860,24 @@ BrowserFSConfigure().then(() => {
                             },
                             message
                         });
+
                         function mod(field, label) {
                             return Object.keys(diffs).filter(fielpath => diffs[fielpath][field]).map(fielpath => {
                                 return ` ${label} mode 100644 ${fielpath}`;
                             }).join('\n');
                         }
-                        var diffs = await gitCommitDiff({dir, newSha: commit, oldSha: head});
+
+                        var diffs = await gitCommitDiff({
+                            dir,
+                            newSha: commit,
+                            oldSha: head
+                        });
                         var stat = diffStat(Object.values(diffs).map(value => value.diff));
                         term.echo(`[master ${commit.substring(0, 7)}] ${message}\n${stat}`);
                         term.echo(mod('deleted', 'delete'));
                         term.echo(mod('added', 'create'));
                     }
+
                     var dir = await gitroot(cwd);
                     var all = !!cmd.args.filter(arg => arg.match(/^-.*a/)).length;
                     if (all) {
@@ -855,10 +932,10 @@ BrowserFSConfigure().then(() => {
                         var editor = window.editor = vi(textarea[0], {
                             color: '#ccc',
                             backgroundColor: '#000',
-                            onSave: function() {
+                            onSave: function () {
                                 file = textarea.val().replace(/&amp;/g, '&').replace(/&lt;/g, '<').split('\n');
                             },
-                            onExit: async function() {
+                            onExit: async function () {
                                 message = file.filter(line => !line.startsWith('#')).join('\n').trim();
                                 if (!message) {
                                     term.echo('Aborting commit due to empty commit message.');
@@ -871,14 +948,14 @@ BrowserFSConfigure().then(() => {
                     } else {
                         await commit();
                     }
-                } catch(e) {
+                } catch (e) {
                     term.exception(e);
                     throw e;
                 } finally {
                     term.resume();
                 }
             },
-            add: function(cmd) {
+            add: function (cmd) {
                 term.pause();
                 cmd.args.shift();
                 var all_git = cmd.args.filter(arg => arg.match(/^(-A|-all)$/)).length;
@@ -903,10 +980,13 @@ BrowserFSConfigure().then(() => {
                     term.resume();
                 }
             },
-            rm: function(cmd) {
+            rm: function (cmd) {
                 cmd.args.shift();
                 var long_options = cmd.args.filter(name => name.match(/^--/));
-                var {args, options} = split_args(cmd.args.filter(name => !name.match(/^--/)));
+                var {
+                    args,
+                    options
+                } = split_args(cmd.args.filter(name => !name.match(/^--/)));
                 var len = args.length;
                 if (!len) {
                     term.error('Nothing to remove');
@@ -924,7 +1004,10 @@ BrowserFSConfigure().then(() => {
                                     if (stat.isDirectory()) {
                                         var promise = git.listDir({dir}).then((list) => {
                                             var files = list.filter(name => name.startsWith(filepath));
-                                            return Promise.all(files.map(file => git.remove({dir, filepath})));
+                                            return Promise.all(files.map(file => git.remove({
+                                                dir,
+                                                filepath
+                                            })));
                                         }).catch(err => term.error(err));
                                         if (options.match(/r/)) {
                                             if (!long_options.includes(/--cached/)) {
@@ -935,7 +1018,10 @@ BrowserFSConfigure().then(() => {
                                         }
                                     } else if (stat.isFile()) {
                                         if (!long_options.includes(/--cached/)) {
-                                            git.remove({dir, filepath}).then(() => fs.unlink(path_name));
+                                            git.remove({
+                                                dir,
+                                                filepath
+                                            }).then(() => fs.unlink(path_name));
                                         } else {
                                             git.remove({dir, filepath});
                                         }
@@ -951,15 +1037,15 @@ BrowserFSConfigure().then(() => {
                     });
                 }
             },
-            login: function() {
+            login: function () {
                 var questions = [
                     {name: 'username'},
                     {name: 'password', mask: true},
                     {name: 'fullname'},
                     {name: 'email'}
                 ];
-                term.echo('This will not authenticate to test if login/password are correct,\n'+
-                          'only save credentials in localStorage (expect password) and use them when push/clone/commit');
+                term.echo('This will not authenticate to test if login/password are correct,\n' +
+                    'only save credentials in localStorage (expect password) and use them when push/clone/commit');
                 var history = term.history();
                 history.disable();
                 (function loop() {
@@ -985,7 +1071,7 @@ BrowserFSConfigure().then(() => {
                     }
                 })();
             },
-            status: function(cmd) {
+            status: function (cmd) {
                 var dir = cwd.split('/')[1];
                 term.pause();
                 /* TODO:
@@ -1002,12 +1088,14 @@ BrowserFSConfigure().then(() => {
                         }
                         return files.filter(([_, status]) => status === name);
                     }
+
                     function not(files, name) {
                         if (name instanceof Array) {
                             return files.filter(([_, status]) => !name.includes(status));
                         }
                         return files.filter(([_, status]) => status !== name);
                     }
+
                     var changes = not(files, ['unmodified', 'ignored']);
                     if (!changes.length) {
                         git.log({dir, depth: 2, ref: branch}).then((commits) => {
@@ -1022,18 +1110,20 @@ BrowserFSConfigure().then(() => {
                         });
                     } else {
                         var label = {
-                            'deleted':  'deleted:    ',
-                            'added':    'new file:   ',
+                            'deleted': 'deleted:    ',
+                            'added': 'new file:   ',
                             'modified': 'modified:   ',
-                            'absent':   'deleted:    '
+                            'absent': 'deleted:    '
                         };
                         var padding = '        ';
                         var output = [`On branch ${branch}`];
+
                         function listFiles(files, colorname) {
                             return files.map(([name, status]) => {
                                 return padding + color(colorname, label[status.replace(/^\*/, '')] + name);
                             });
                         }
+
                         var lines;
                         var to_be_added = filter(changes, ['added', 'modified', 'deleted']);
                         if (to_be_added.length) {
@@ -1073,9 +1163,10 @@ BrowserFSConfigure().then(() => {
                     }
                 }).catch(error);
             },
-            diff: function(cmd) {
+            diff: function (cmd) {
                 cmd.args.shift();
                 term.pause();
+
                 function diff({dir, filepath}) {
                     return gitDiff({dir, filepath, branch}).then(diff => {
                         const text = diff.hunks.map(hunk => {
@@ -1113,12 +1204,14 @@ BrowserFSConfigure().then(() => {
                         };
                     });
                 }
+
                 function format(diff) {
                     const header = ['diff --git a/' + diff.filepath + ' b/' + diff.filepath];
                     header.push('--- ' + diff.filepath);
                     header.push('+++ ' + diff.filepath);
                     return [color('white', header.join('\n')), diff.text].join('\n');
                 }
+
                 gitroot(cwd).then(dir => {
                     if (!cmd.args.length) {
                         return git.listFiles({dir}).then(files => {
@@ -1131,7 +1224,7 @@ BrowserFSConfigure().then(() => {
                                             return diff({dir, filepath});
                                         }
                                     });
-                                } catch(e) {
+                                } catch (e) {
                                     debugger;
                                     throw e;
                                 }
@@ -1156,13 +1249,13 @@ BrowserFSConfigure().then(() => {
                     term.resume();
                 }).catch(err => term.error(err.message).resume());
             },
-            log: function(cmd) {
+            log: function (cmd) {
                 term.pause();
                 var depth = getOption('-n', cmd.args);
                 depth = depth ? +depth : undefined;
                 gitroot(cwd).then(dir => {
                     return Promise.all([getHEAD({dir}), getHEAD({dir, remote: true})])
-                                  .then(([head, remote_head]) => ({ dir, head, remote_head }));
+                        .then(([head, remote_head]) => ({dir, head, remote_head}));
                 }).then(({dir, head, remote_head}) => {
                     function format(commit) {
                         var output = [];
@@ -1194,6 +1287,7 @@ BrowserFSConfigure().then(() => {
                         output.push(`    ${commit.message}`);
                         return output.join('\n');
                     }
+
                     return git.log({dir, depth, ref: branch}).then(commits => {
                         var text = commits.filter(commit => !commit.error).map(format).join('\n\n');
                         if (text.length - 1 > term.rows()) {
@@ -1205,14 +1299,14 @@ BrowserFSConfigure().then(() => {
                     });
                 }).catch(error);
             },
-            clone: function(cmd) {
+            clone: function (cmd) {
                 term.pause();
                 cmd.args.shift();
                 var args = [];
                 var options = {};
                 var long;
                 var re = /^--(.*)/;
-                cmd.args.forEach(function(arg) {
+                cmd.args.forEach(function (arg) {
                     if (long) {
                         options[long[1]] = arg;
                     } else if (!String(arg).match(re)) {
@@ -1224,14 +1318,14 @@ BrowserFSConfigure().then(() => {
                 var url = args[0];
                 re = /\/([^\/]+?)(\.git)?$/;
                 var repo_dir = path.join(cwd, (args.length === 2 ? args[1] : args[0].match(re)[1]));
-                fs.stat(repo_dir, function(err, stat) {
+                fs.stat(repo_dir, function (err, stat) {
                     if (err) {
                         mkdir(repo_dir, true).then(clone).catch(error);
                     } else if (stat) {
                         if (stat.isFile()) {
                             term.error(`"${repo_dir}" is a file`).resume();
                         } else {
-                            fs.readdir(repo_dir, function(err, list) {
+                            fs.readdir(repo_dir, function (err, list) {
                                 if (list.length) {
                                     term.error(`"${repo_dir}" exists and is not empty`).resume();
                                 } else {
@@ -1241,6 +1335,7 @@ BrowserFSConfigure().then(() => {
                         }
                     }
                 });
+
                 function clone() {
                     term.echo(`Cloning into '${repo_dir}'...`);
                     var auth = {};
@@ -1261,7 +1356,7 @@ BrowserFSConfigure().then(() => {
                 }
             }
         },
-        credits: function() {
+        credits: function () {
             var lines = [
                 '',
                 'Projects used with GIT Web Terminal:',
@@ -1284,7 +1379,7 @@ BrowserFSConfigure().then(() => {
             ].concat(contributors.map(user => '\t[[!;;;;' + user.url + ']' + (user.fullname || user.name) + ']'));
             term.echo(lines.join('\n') + '\n');
         },
-        help: function() {
+        help: function () {
             term.echo('\nList of commands: ' + Object.keys(term.commands).join(', '), {keepWords: true});
             term.echo('List of Git commands: ' + Object.keys(term.commands.git).join(', '), {keepWords: true});
             term.echo([
@@ -1308,12 +1403,12 @@ BrowserFSConfigure().then(() => {
     };
     var ymacs = init_ymacs();
     var scrollTop;
-    var view = (function() {
+    var view = (function () {
         var base = location.pathname.replace(/\/[^\/]+$/, '/').replace(/__browserfs__.*/, '');
         var viewer = $('.viewer');
         var iframe = viewer.find('iframe');
         var splitter;
-        viewer.on('click', '.close', function() {
+        viewer.on('click', '.close', function () {
             if (splitter) {
                 splitter.destroy();
                 splitter = null;
@@ -1321,22 +1416,22 @@ BrowserFSConfigure().then(() => {
                 $('.terminal-view').css('width', '');
             }
         });
-        var adress = viewer.find('input').on('keydown', function(e) {
+        var adress = viewer.find('input').on('keydown', function (e) {
             if (e.key.toLowerCase() == 'enter') {
                 view(adress.val());
             }
         });
-        viewer.on('click', '.refresh', function() {
+        viewer.on('click', '.refresh', function () {
             view(adress.val());
         });
         var paths = [];
         var index = 0;
-        var next = viewer.find('.next').on('click', function() {
+        var next = viewer.find('.next').on('click', function () {
             if (!next.is('.disabled')) {
                 view(paths[++index], true);
             }
         });
-        var prev = viewer.find('.prev').on('click', function() {
+        var prev = viewer.find('.prev').on('click', function () {
             if (!prev.is('.disabled')) {
                 view(paths[--index], true);
             }
@@ -1349,7 +1444,7 @@ BrowserFSConfigure().then(() => {
                     limit: 400
                 });
             }
-            iframe.off('load').on('load', function() {
+            iframe.off('load').on('load', function () {
                 var path = iframe[0].contentWindow.location.href.replace(/.*__browserfs__/, '');
                 adress.val(path);
                 // this need to be added each time because we need to access soft prop
@@ -1366,7 +1461,7 @@ BrowserFSConfigure().then(() => {
 
         return view;
     })();
-    var instance = $('.term').terminal(function(command, term) {
+    var instance = $('.term').terminal(function (command, term) {
         var cmd = $.terminal.split_command(command);
         if (term.commands[cmd.name]) {
             var action = term.commands[cmd.name];
@@ -1388,15 +1483,17 @@ BrowserFSConfigure().then(() => {
         }
     }, {
         execHash: true,
-        onResize: function() {
+        onResize: function () {
             this.innerHeight(this.parent().height());
         },
-        completion: function(string, cb) {
+        completion: function (string, cb) {
             var cmd = $.terminal.parse_command(this.before_cursor());
+
             function processAssets(callback) {
                 var dir = get_path(string);
                 return list('/' + dir.join('/')).then(callback);
             }
+
             function prepend(list) {
                 if (string.match(/\//)) {
                     var path = string.replace(/\/[^\/]+$/, '').replace(/\/+$/, '');
@@ -1405,9 +1502,11 @@ BrowserFSConfigure().then(() => {
                     return list;
                 }
             }
+
             function trailing(list) {
                 return list.map((dir) => dir + '/');
             }
+
             if (cmd.name !== string) {
                 switch (cmd.name) {
                     // complete file and directories
@@ -1459,7 +1558,7 @@ BrowserFSConfigure().then(() => {
         },
         greetings: false,
         name,
-        prompt: function(cb) {
+        prompt: function (cb) {
             var path = color('blue', cwd);
             var b = branch ? ' &#91;' + color('violet', branch) + '&#93;' : '';
             cb([
@@ -1477,23 +1576,24 @@ BrowserFSConfigure().then(() => {
 // ---------------------------------------------------------------------------------------------------------
 function init_ymacs() {
     var ymacs = new Ymacs({
-        buffers: [ ],
+        buffers: [],
         className: "Ymacs-blinking-caret"
     });
-    ymacs.setColorTheme([ "dark", "y" ]);
+    ymacs.setColorTheme(["dark", "y"]);
     ymacs.disabled(true);
-    var wrapper = $('.terminal-view').resizer(function() {
+    var wrapper = $('.terminal-view').resizer(function () {
         ymacs.callHooks('onResize');
     });
     $(ymacs.getElement()).appendTo(wrapper);
     try {
         ymacs.getActiveBuffer().cmd("eval_file", ".ymacs");
-    } catch(ex) {}
+    } catch (ex) {
+    }
     // -------------------------------------------------------------------------------------------------
-    Ymacs.prototype.fs_setFileContents = function(name, content, stamp, cont) {
+    Ymacs.prototype.fs_setFileContents = function (name, content, stamp, cont) {
         var self = this;
         if (stamp) {
-            fs.readFile(name, function(err, file) {
+            fs.readFile(name, function (err, file) {
                 if (file != stamp) {
                     cont(null);
                 } else {
@@ -1501,7 +1601,7 @@ function init_ymacs() {
                 }
             });
         } else {
-            fs.writeFile(name, content, function(err, written) {
+            fs.writeFile(name, content, function (err, written) {
                 if (!err) {
                     cont(content);
                 } else {
@@ -1511,13 +1611,13 @@ function init_ymacs() {
         }
     };
     // -------------------------------------------------------------------------------------------------
-    Ymacs.prototype.fs_getFileContents = function(name, nothrow, cont) {
+    Ymacs.prototype.fs_getFileContents = function (name, nothrow, cont) {
         var self = this;
-        fs.stat(name, function(err, stat) {
+        fs.stat(name, function (err, stat) {
             if (err || !stat.isFile()) {
                 cont(null, null);
             } else {
-                fs.readFile(name, function(err, file) {
+                fs.readFile(name, function (err, file) {
                     if (err) {
                         if (!nothrow) {
                             throw new Ymacs_Exception("File not found");
@@ -1532,25 +1632,25 @@ function init_ymacs() {
         });
     };
     // -------------------------------------------------------------------------------------------------
-    Ymacs.prototype.fs_fileType = function(name, cont) {
-        fs.stat(name, function(err, stat) {
+    Ymacs.prototype.fs_fileType = function (name, cont) {
+        fs.stat(name, function (err, stat) {
             cont(err || stat.isFile() ? true : null);
         });
     };
     // -------------------------------------------------------------------------------------------------
-    Ymacs.prototype.fs_normalizePath = function(path) {
+    Ymacs.prototype.fs_normalizePath = function (path) {
         return path;
     };
     // -------------------------------------------------------------------------------------------------
-    Ymacs.prototype.fs_getDirectory = function(dir, cont) {
-        fs.readdir(dir, function(err, list) {
+    Ymacs.prototype.fs_getDirectory = function (dir, cont) {
+        fs.readdir(dir, function (err, list) {
             var result = {};
             (function loop() {
                 var obj = list.shift();
                 if (!obj) {
                     cont(result);
                 } else {
-                    fs.stat(dir + '/' + obj, function(err, stat) {
+                    fs.stat(dir + '/' + obj, function (err, stat) {
                         if (!err) {
                             result[obj] = {type: stat.isFile() ? 'file' : 'directory'}
                             loop();
@@ -1562,7 +1662,7 @@ function init_ymacs() {
     };
     // -------------------------------------------------------------------------------------------------
     Ymacs_Buffer.newCommands({
-        exit: Ymacs_Interactive(function() {
+        exit: Ymacs_Interactive(function () {
             var buffs = ymacs.buffers.slice();
             (function loop() {
                 var buff = buffs.shift();
@@ -1571,14 +1671,15 @@ function init_ymacs() {
                         ymacs.killBuffer(buff);
                         loop();
                     }
+
                     if (buff.name != '*scratch*') {
                         if (buff.dirty()) {
                             var msg = 'Save file ' + buff.name + ' yes or no?';
-                            buff.cmd('minibuffer_yn', msg, function(yes) {
+                            buff.cmd('minibuffer_yn', msg, function (yes) {
                                 if (yes) {
                                     buff.cmd('save_buffer_with_continuation',
-                                             false,
-                                             next);
+                                        false,
+                                        next);
                                 } else {
                                     next();
                                 }
@@ -1594,10 +1695,11 @@ function init_ymacs() {
                 }
             })();
         }),
-        next_buffer: Ymacs_Interactive(function() {
+        next_buffer: Ymacs_Interactive(function () {
             var buffs = ymacs.buffers.slice();
             var buff = ymacs.getActiveBuffer();
-            while(buffs.shift() != buff) {}
+            while (buffs.shift() != buff) {
+            }
             if (buffs.length) {
                 ymacs.switchToBuffer(buffs[0]);
             } else {
@@ -1606,7 +1708,7 @@ function init_ymacs() {
         })
     });
     // -------------------------------------------------------------------------------------------------
-    DEFINE_SINGLETON("Ymacs_Keymap_Leash", Ymacs_Keymap_Emacs, function(D, P) {
+    DEFINE_SINGLETON("Ymacs_Keymap_Leash", Ymacs_Keymap_Emacs, function (D, P) {
         D.KEYS = {
             "C-x C-c": "exit"
         };
@@ -1625,9 +1727,11 @@ async function listAllFiles({dir, pathname = '', pattern = null}) {
     let files = [];
     var root = pathname ? path.join(dir, pathname) : dir;
     let content = await listDir(root);
+
     function skip(name) {
         return pattern !== null && !name.match(pattern);
     }
+
     for (let filename of content.files) {
         if (pathname) {
             filename = path.join(pathname, filename);
@@ -1648,10 +1752,11 @@ async function listAllFiles({dir, pathname = '', pattern = null}) {
     }
     return files;
 }
+
 // ---------------------------------------------------------------------------------------------------------
 function listDir(path) {
-    return new Promise(function(resolve, reject) {
-        fs.readdir(path, function(err, dirList) {
+    return new Promise(function (resolve, reject) {
+        fs.readdir(path, function (err, dirList) {
             if (err) {
                 return reject(err);
             }
@@ -1663,9 +1768,9 @@ function listDir(path) {
             if (!len) {
                 resolve(result);
             }
-            dirList.forEach(function(filename) {
+            dirList.forEach(function (filename) {
                 var file = (path === '/' ? '' : path) + '/' + filename;
-                fs.stat(file, function(err, stat) {
+                fs.stat(file, function (err, stat) {
                     if (err) {
                         throw new Error(err);
                     }
@@ -1685,37 +1790,37 @@ function listDir(path) {
 // ---------------------------------------------------------------------------------------------------------
 // source: https://stackoverflow.com/a/3629861/387194
 function union(x, y) {
-  var obj = {};
-  for (var i = x.length-1; i >= 0; -- i)
-     obj[x[i]] = x[i];
-  for (var i = y.length-1; i >= 0; -- i)
-     obj[y[i]] = y[i];
-  var res = [];
-  for (var k in obj) {
-    if (obj.hasOwnProperty(k))  // <-- optional
-      res.push(obj[k]);
-  }
-  return res;
+    var obj = {};
+    for (var i = x.length - 1; i >= 0; --i)
+        obj[x[i]] = x[i];
+    for (var i = y.length - 1; i >= 0; --i)
+        obj[y[i]] = y[i];
+    var res = [];
+    for (var k in obj) {
+        if (obj.hasOwnProperty(k))  // <-- optional
+            res.push(obj[k]);
+    }
+    return res;
 }
 
 // ---------------------------------------------------------------------------------------------------------
 function intersection(a, b) {
-    return a.filter(function(n) {
+    return a.filter(function (n) {
         return b.includes(n);
     });
 }
 
 // ---------------------------------------------------------------------------------------------------------
 async function rmdir(dir) {
-    return new Promise(function(resolve, reject) {
-        fs.readdir(dir, async function(err, list) {
+    return new Promise(function (resolve, reject) {
+        fs.readdir(dir, async function (err, list) {
             if (err) {
                 return reject(err);
             }
-            for(var i = 0; i < list.length; i++) {
+            for (var i = 0; i < list.length; i++) {
                 var filename = path.join(dir, list[i]);
-                var stat = await new Promise(function(resolve, reject) {
-                    fs.stat(filename, function(err, stat) {
+                var stat = await new Promise(function (resolve, reject) {
+                    fs.stat(filename, function (err, stat) {
                         if (err) {
                             return reject(err);
                         }
@@ -1723,11 +1828,11 @@ async function rmdir(dir) {
                     });
                 });
                 if (!filename.match(/^\.{1,2}$/)) {
-                    if(stat.isDirectory()) {
+                    if (stat.isDirectory()) {
                         await rmdir(filename);
                     } else {
-                        await new Promise(function(resolve, reject) {
-                            fs.unlink(filename, function(err) {
+                        await new Promise(function (resolve, reject) {
+                            fs.unlink(filename, function (err) {
                                 if (err) {
                                     return reject(err);
                                 }
@@ -1743,19 +1848,23 @@ async function rmdir(dir) {
 }
 
 
-
 // ---------------------------------------------------------------------------------------------------------
 async function listBranchFiles({dir, branch}) {
-    const sha = await git.resolveRef({ dir, ref: `refs/remotes/origin/${branch}` });
-    const { object: { tree } } = await git.readObject({ dir, oid: sha });
+    const sha = await git.resolveRef({dir, ref: `refs/remotes/origin/${branch}`});
+    const {object: {tree}} = await git.readObject({dir, oid: sha});
     var list = [];
-    return traverseCommit({dir, sha, callback: ({filepath}) => list.push(filepath)}).then(() => list);
+    return traverseCommit({
+        dir,
+        sha,
+        callback: ({filepath}) => list.push(filepath)
+    }).then(() => list);
 }
+
 // ---------------------------------------------------------------------------------------------------------
 async function traverseCommit({dir, sha, callback = $.noop}) {
-    const { object: { tree } } = await git.readObject({ dir, oid: sha });
+    const {object: {tree}} = await git.readObject({dir, oid: sha});
     return await (async function readFiles(oid, path) {
-        const { object: { entries } } = await git.readObject({ dir, oid});
+        const {object: {entries}} = await git.readObject({dir, oid});
         var i = 0;
         return (async function loop() {
             var entry = entries[i++];
@@ -1775,17 +1884,19 @@ async function traverseCommit({dir, sha, callback = $.noop}) {
 // ---------------------------------------------------------------------------------------------------------
 async function gitCommitDiff({dir, newSha, oldSha}) {
     var result = {};
+
     function reader(name) {
         return async ({filepath, oid}) => {
             try {
-                const { object: pkg } = await git.readObject({ dir, oid });
+                const {object: pkg} = await git.readObject({dir, oid});
                 result[filepath] = result[filepath] || {};
                 result[filepath][name] = pkg.toString('utf8');
-            } catch(e) {
+            } catch (e) {
                 // ignore missing file/object
             }
         };
     }
+
     await traverseCommit({dir, sha: oldSha, callback: reader('oldFile')});
     await traverseCommit({dir, sha: newSha, callback: reader('newFile')});
     Object.keys(result).forEach(key => {
@@ -1807,7 +1918,7 @@ async function gitCommitDiff({dir, newSha, oldSha}) {
 // ---------------------------------------------------------------------------------------------------------
 function diffStat(diffs) {
     var modifications = diffs.reduce((acc, {hunks}) => {
-        hunks.forEach(function(hunk) {
+        hunks.forEach(function (hunk) {
             hunk.lines.forEach((line) => {
                 if (line[0] === '-') {
                     acc.minus++;
@@ -1830,16 +1941,16 @@ function diffStat(diffs) {
 }
 
 // ---------------------------------------------------------------------------------------------------------
-async function readBranchFile({ dir, filepath, branch }) {
+async function readBranchFile({dir, filepath, branch}) {
     const ref = 'refs/remotes/origin/' + branch;
-    const sha = await git.resolveRef({ dir,  ref });
-    const { object: { tree } } = await git.readObject({ dir, oid: sha });
+    const sha = await git.resolveRef({dir, ref});
+    const {object: {tree}} = await git.readObject({dir, oid: sha});
     return (async function loop(tree, path) {
         if (!path.length) {
             throw new Error(`File ${filepath} not found`);
         }
         var name = path.shift();
-        const { object: { entries } } = await git.readObject({ dir, oid: tree });
+        const {object: {entries}} = await git.readObject({dir, oid: tree});
         const packageEntry = entries.find((entry) => {
             return entry.path === name;
         });
@@ -1847,7 +1958,7 @@ async function readBranchFile({ dir, filepath, branch }) {
             throw new Error(`File ${filepath} not found`);
         } else {
             if (packageEntry.type == 'blob') {
-                const { object: pkg } = await git.readObject({ dir, oid: packageEntry.oid });
+                const {object: pkg} = await git.readObject({dir, oid: packageEntry.oid});
                 return pkg.toString('utf8');
             } else if (packageEntry.type == 'tree') {
                 return loop(packageEntry.oid, path);
@@ -1855,8 +1966,10 @@ async function readBranchFile({ dir, filepath, branch }) {
         }
     })(tree, filepath.split('/'));
 }
+
 const padleft = (input, n, str) => (new Array(n + 1).join(str || ' ') + input).slice(-n);
 const padright = (input, n, str) => (input + new Array(n + 1).join(str || ' ')).substring(0, n);
+
 // ---------------------------------------------------------------------------------------------------------
 function date(timestamp, timezoneOffset) {
     timezoneOffset *= -1;
@@ -1869,14 +1982,16 @@ function date(timestamp, timezoneOffset) {
     var day = days[d.getDay()].substring(0, 3);
     var month = months[d.getMonth()].substring(0, 3);
     const pad = (input) => padleft(input, 2, '0');
+
     function offset(offset) {
         var timezone = ('0' + (offset / 60).toString().replace('.', '') + '00').slice(-4);
         return (offset > 1 ? '+' : '-') + timezone;
     }
+
     return [day, month, pad(d.getDate()),
-            [pad(d.getHours()), pad(d.getMinutes()), pad(d.getSeconds())].join(':'),
-            d.getFullYear(),
-            offset(timezoneOffset)
+        [pad(d.getHours()), pad(d.getMinutes()), pad(d.getSeconds())].join(':'),
+        d.getFullYear(),
+        offset(timezoneOffset)
     ].join(' ');
 }
 
@@ -1884,18 +1999,20 @@ function date(timestamp, timezoneOffset) {
 function gitroot(cwd) {
     return git.findRoot({filepath: cwd});
 }
+
 // ---------------------------------------------------------------------------------------------------------
 async function gitBranch({cwd}) {
     try {
         var dir = await gitroot(cwd);
         return git.currentBranch({dir});
-    } catch(e) {
+    } catch (e) {
     }
 }
+
 // ---------------------------------------------------------------------------------------------------------
 function gitCheckoutFile({dir, filepath, branch}) {
     var fname = dir + '/' + filepath;
-    return new Promise(function(resolve, reject) {
+    return new Promise(function (resolve, reject) {
         readBranchFile({dir, branch, filepath}).then(oldFile => {
             if (!oldFile) {
                 return;
@@ -1910,11 +2027,12 @@ function gitCheckoutFile({dir, filepath, branch}) {
         });
     });
 }
+
 // ---------------------------------------------------------------------------------------------------------
 function gitDiff({dir, filepath, branch}) {
     var fname = dir + '/' + filepath;
-    return new Promise(function(resolve, reject) {
-        fs.readFile(fname, async function(err, newFile) {
+    return new Promise(function (resolve, reject) {
+        fs.readFile(fname, async function (err, newFile) {
             if (!err) {
                 newFile = newFile.toString();
             }
@@ -1925,6 +2043,7 @@ function gitDiff({dir, filepath, branch}) {
         });
     });
 }
+
 // ---------------------------------------------------------------------------------------------------------
 async function gitReset({git, dir, ref, branch, hard = false}) {
     var re = /^HEAD~([0-9]+)$/;
@@ -1950,7 +2069,7 @@ async function gitReset({git, dir, ref, branch, hard = false}) {
                             return reject(err);
                         }
                         // checkout the branch into the working tree
-                        git.checkout({ dir, ref: branch }).then(resolve);
+                        git.checkout({dir, ref: branch}).then(resolve);
                     });
                 }
             });
@@ -1980,7 +2099,7 @@ function getHEAD({dir, gitdir, remote = false}) {
     return new Promise((resolve, reject) => {
         var base = `${dir}/${gitdir || '.git'}/`;
         var ref_file = remote ? `${base}refs/remotes/origin/HEAD` : `${base}HEAD`;
-        fs.readFile(ref_file, function(err, data) {
+        fs.readFile(ref_file, function (err, data) {
             var ref;
             if (err) {
                 //return reject(`can't read ${ref_file}: ${err}` );
@@ -1988,7 +2107,7 @@ function getHEAD({dir, gitdir, remote = false}) {
             } else {
                 ref = data.toString().match(/ref: (.*)/)[1];
             }
-            fs.readFile(base + ref, function(err, data) {
+            fs.readFile(base + ref, function (err, data) {
                 if (err) {
                     return reject(`can't read ${base + ref}: ${err}`);
                 }
@@ -2000,7 +2119,7 @@ function getHEAD({dir, gitdir, remote = false}) {
 
 // ---------------------------------------------------------------------------------------------------------
 function mkdir(dir, parent = false) {
-    return new Promise(function(resolve, reject) {
+    return new Promise(function (resolve, reject) {
         if (parent) {
             dir = dir.split('/');
             if (!dir.length) {
@@ -2012,9 +2131,9 @@ function mkdir(dir, parent = false) {
                     return resolve();
                 }
                 full_path = path.join(full_path, dir.shift());
-                fs.stat(full_path, function(err, stat) {
+                fs.stat(full_path, function (err, stat) {
                     if (err) {
-                        fs.mkdir(full_path, function(err) {
+                        fs.mkdir(full_path, function (err) {
                             if (err) {
                                 reject(err);
                             } else {
@@ -2031,9 +2150,9 @@ function mkdir(dir, parent = false) {
                 });
             })();
         } else {
-            fs.stat(dir, function(err, stat) {
+            fs.stat(dir, function (err, stat) {
                 if (err) {
-                    fs.mkdir(dir, function(err) {
+                    fs.mkdir(dir, function (err) {
                         if (err) {
                             reject(err);
                         } else {
@@ -2058,7 +2177,7 @@ async function makeZip(dir, filepath) {
     var zip = new JSZip();
     var directories = {};
     var re = new RegExp('^' + dir);
-    await traverseDirectory(dir, async function(stat, filepath) {
+    await traverseDirectory(dir, async function (stat, filepath) {
         var relPath = filepath.replace(re, '').replace(/^\//, '');
         if (stat == 'directory') {
             if (filepath !== dir) {
@@ -2068,13 +2187,13 @@ async function makeZip(dir, filepath) {
             var parts = relPath.split('/');
             var filename = parts.pop();
             var dir = parts.join('/');
-            await new Promise(function(resolve, reject) {
-                fs.readFile(filepath, function(err, data) {
+            await new Promise(function (resolve, reject) {
+                fs.readFile(filepath, function (err, data) {
                     if (err) {
                         return reject(err);
                     }
                     var blob = new Blob([data], {
-                        type : "text/plain"
+                        type: "text/plain"
                     });
                     (directories[dir] || zip).file(filename, data);
                     resolve();
@@ -2087,12 +2206,12 @@ async function makeZip(dir, filepath) {
 
 // ---------------------------------------------------------------------------------------------------------
 function writeZip(zip, filepath) {
-    return new Promise(function(resolve, reject) {
-        zip.generateAsync({type:"blob"}).then(function(blob) {
+    return new Promise(function (resolve, reject) {
+        zip.generateAsync({type: "blob"}).then(function (blob) {
             var fileReader = new FileReader();
-            fileReader.onload = function() {
+            fileReader.onload = function () {
                 var arrayBuffer = this.result;
-                fs.writeFile(filepath, new buffer.Buffer(arrayBuffer), function(err) {
+                fs.writeFile(filepath, new buffer.Buffer(arrayBuffer), function (err) {
                     if (err) {
                         reject(err);
                     } else {
@@ -2110,8 +2229,8 @@ function traverseDirectory(dir, callback, options) {
     var settings = Object.assign({}, {
         parentFirst: false
     }, options);
-    return new Promise(function(resolve, reject) {
-        fs.readdir(dir, async function(err, list) {
+    return new Promise(function (resolve, reject) {
+        fs.readdir(dir, async function (err, list) {
             if (err) {
                 return reject(err);
             }
@@ -2120,8 +2239,8 @@ function traverseDirectory(dir, callback, options) {
             }
             for (var i = 0; i < list.length; i++) {
                 var filename = path.join(dir, list[i]);
-                var stat = await new Promise(function(resolve, reject) {
-                    fs.stat(filename, function(err, stat) {
+                var stat = await new Promise(function (resolve, reject) {
+                    fs.stat(filename, function (err, stat) {
                         if (err) {
                             return reject(err);
                         }

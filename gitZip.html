@@ -1,0 +1,157 @@
+<html>
+
+
+<body>
+Well heres some stuff
+
+<textarea id="foo"></textarea>
+<h4><span id=repocount></span> Github Repositories</h4>
+        <div id=github></div>
+
+<script type="text/javascript" src="https;//bsjs.sgol.pub/js/all.min.js"></script>
+<script type="text/javascript" src="./node_modules/browserfs/dist/browserfs.js"></script>
+<script type="text/javascript">
+
+
+
+
+function githubReposByUser(user) {
+  const apirepo = `https://api.github.com/users/${user}`;
+  const apirepo = `https://api.github.com/users/${user}`;
+  const repoDetails = {};
+
+  const listrepos = document.createElement('ul');
+  document.getElementById('github').appendChild(listrepos);
+
+  fetch(`${apirepo}/repos`)
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`Network response was not ok: ${response.statusText}`);
+      }
+      return response.json();
+    })
+    .then(data => {
+      console.log('Data now:', data);
+
+      function compare(a, b) {
+        if (a.watchers > b.watchers) {
+          return -1;
+        }
+        if (a.watchers < b.watchers) {
+          return 1;
+        }
+        return 0;
+      }
+
+      data.sort(compare);
+
+      data.forEach(v => {
+        const repoName = v.name;
+        const repoDetailsObj = {
+          description: v.description,
+          stars: v.watchers,
+          url: v.html_url,
+        };
+
+        repoDetails[repoName] = repoDetailsObj;
+
+        const listItemRepo = document.createElement('li');
+        listrepos.appendChild(listItemRepo);
+
+        const hlink = document.createElement('a');
+        listItemRepo.appendChild(hlink);
+        hlink.textContent = `${repoName} | Stars: ${v.watchers}`;
+        hlink.href = v.html_url;
+      });
+
+      // Log all keys found in the repoDetails object
+      console.log('Keys in repoDetails:', Object.keys(repoDetails));
+    })
+    .catch(error => {
+      console.error('Fetch error:', error);
+    });
+}
+
+// Example usage:
+githubReposByUser('syonfox');
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // Installs globals onto window:
+    // * Buffer
+    // * require (monkey-patches if already defined)
+    // * process
+    // You can pass in an arbitrary object if you do not wish to pollute
+    // the global namespace.
+    BrowserFS.install(window);
+    // Configures BrowserFS to use the LocalStorage file system.
+    BrowserFS.configure({
+        fs: "LocalStorage"
+    }, function (e) {
+        if (e) {
+            // An error happened!
+            throw e;
+        }
+        // Otherwise, BrowserFS is ready-to-use!
+    });
+
+    //Now, you can write code like this:
+
+    var fs = require('fs');
+    fs.writeFile('/test.txt', 'Cool, I can do this in the browser!', function (err) {
+        fs.readFile('/test.txt', function (err, contents) {
+            console.log(contents.toString());
+        });
+    });
+
+
+    let zipUrl = "https://github.com/syonfox/lolcat/archive/refs/heads/main.zip"
+    // Note: This is the new fetch API in the browser. You can use XHR too.
+    fetch(zipUrl).then(function(response) {
+        return response.arraybuffer();
+    }).then(function(zipData) {
+        var Buffer = BrowserFS.BFSRequire('buffer').Buffer;
+
+        BrowserFS.configure({
+            fs: "MountableFileSystem",
+            options: {
+                "/zip": {
+                    fs: "ZipFS",
+                    options: {
+                        // Wrap as Buffer object.
+                        zipData: Buffer.from(zipData)
+                    }
+                },
+                "/tmp": { fs: "InMemory" },
+                "/home": { fs: "IndexedDB" }
+            }
+        }, function(e) {
+            if (e) {
+                // An error occurred.
+                throw e;
+            }
+            // Otherwise, BrowserFS is ready to use!
+        });
+    });
+
+
+</script>
+</body>
+
+
+</html>

@@ -11,7 +11,8 @@
  *
  */
 /* global BrowserFS, Response, setTimeout, fetch, Blob, Headers */
-self.importScripts('https://cdn.jsdelivr.net/npm/browserfs');
+// self.importScripts('https://cdn.jsdelivr.net/npm/browserfs');
+self.importScripts('./node_modules/browserfs/dist/browserfs.js');
 
 self.addEventListener('install', self.skipWaiting);
 

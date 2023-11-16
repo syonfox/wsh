@@ -72,6 +72,8 @@ const CredentialManager = {
         if (paused) await term.pause();
     },
     async rejected({ url, auth }) {
+        console.log("rejected" , url)
+
         if (await localStorage.getItem(url)) {
             let paused = await term.paused();
             if (paused) await term.resume();
@@ -86,6 +88,7 @@ const CredentialManager = {
     
 
 self.addEventListener('message', ({ data }) => {
+    console.log("message" , data)
     BrowserFS.configure({
         fs: 'IndexedDB', options: {}
     }, function (err) {
